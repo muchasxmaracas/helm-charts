@@ -17,6 +17,7 @@ persistence:
 
 # Environment variables for VPN and Network
 env:
+  TRANSMISSION_WEB_UI: "transmissionic"
   OPENVPN_PROVIDER: "PIA"
   OPENVPN_CONFIG: "france"
   OPENVPN_USERNAME: "p2746337"
@@ -46,6 +47,7 @@ ingress:
       paths:
         - path: /transmission/web/
           pathType: ImplementationSpecific
+        - path: /transmission/rpc/
   tls:
     - secretName: transmission-tls-secret
       hosts:
