@@ -31,7 +31,8 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ include "transmission-openvpn.fullname" . }}
+                # Use $ to reference the global context
+                name: {{ include "transmission-openvpn.fullname" $ }} 
                 port:
                   number: {{ $.Values.service.port }}
           {{- end }}
