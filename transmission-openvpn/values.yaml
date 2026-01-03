@@ -1,0 +1,78 @@
+affinity: {}
+
+# Persistence for config and data
+persistence:
+  config:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 2Gi
+    storageClass: hcloud-volumes
+  data:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 100Gi
+    storageClass: storage-box-1
+
+# Environment variables for VPN and Network
+env:
+  OPENVPN_PROVIDER: "PIA"
+  OPENVPN_CONFIG: "france"
+  OPENVPN_USERNAME: "user"
+  OPENVPN_PASSWORD: "pass"
+  LOCAL_NETWORK: "192.168.0.0/16"
+
+image:
+  repository: haugene/transmission-openvpn
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+
+ingress:
+  enabled: true
+  ingressClassName: 'traefik'
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+  hosts:
+    - host: transmission.baphomet.cloud
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: transmission-tls-secret
+      hosts:
+        - transmission.baphomet.cloud
+
+podAnnotations: {}
+podLabels: {}
+
+# Critical for VPN: Needs NET_ADMIN capability
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    add:
+      - NET_ADMIN
+  privileged: false
+  runAsNonRoot: false # Often required for OpenVPN to initialize tun device
+  runAsUser: 0 
+
+service:
+  type: ClusterIP
+  port: 9091
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+nodeSelector: {}
+tolerations: []
