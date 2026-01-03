@@ -55,9 +55,13 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 10
           env:
-            {{- range $key, $value := .Values.env }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
+            {{- range $name, $item := .Values.env }}
+            - name: {{ $name }}
+              {{- if kindIs "map" $item }}
+              {{- toYaml $item | nindent 14 }}
+              {{- else }}
+              value: {{ $item | quote }}
+              {{- end }}
             {{- end }}
           volumeMounts:
             - name: config
