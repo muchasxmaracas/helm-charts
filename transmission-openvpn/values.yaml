@@ -18,6 +18,13 @@ persistence:
 # Environment variables for VPN and Network
 env:
   TRANSMISSION_WEB_UI: "transmissionic"
+  TRANSMISSION_RPC_USERNAME: "admin"
+  TRANSMISSION_RPC_PASSWORD:
+    valueFrom:
+      secretKeyRef:
+        name: transmission-ui-auth
+        key: password
+  TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: true
   OPENVPN_PROVIDER: "PIA"
   OPENVPN_CONFIG: "france"
   OPENVPN_USERNAME: "p2746337"
