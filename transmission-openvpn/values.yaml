@@ -47,7 +47,6 @@ ingress:
       paths:
         - path: /transmission/web/
           pathType: ImplementationSpecific
-        - path: /transmission/rpc/
   tls:
     - secretName: transmission-tls-secret
       hosts:
