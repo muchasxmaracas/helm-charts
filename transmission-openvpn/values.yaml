@@ -24,7 +24,7 @@ env:
       secretKeyRef:
         name: transmission-ui-auth
         key: password
-  TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: true
+  TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: "true"
   OPENVPN_PROVIDER: "PIA"
   OPENVPN_CONFIG: "france"
   OPENVPN_USERNAME: "p2746337"
