@@ -50,7 +50,7 @@ spec:
                 - |
                   wget --quiet --tries=1 --spider \
                   --header "Authorization: Basic $(echo -n ${TRANSMISSION_RPC_USERNAME}:${TRANSMISSION_RPC_PASSWORD} | base64)" \
-                  http://localhost:9091/transmission/web/
+                  https://transmission.baphomet.cloud/transmission/web/
             initialDelaySeconds: 45
             periodSeconds: 20
           readinessProbe:
@@ -61,7 +61,7 @@ spec:
                 - |
                   wget --quiet --tries=1 --spider \
                   --header "Authorization: Basic $(echo -n ${TRANSMISSION_RPC_USERNAME}:${TRANSMISSION_RPC_PASSWORD} | base64)" \
-                  http://localhost:9091/transmission/web/
+                  https://transmission.baphomet.cloud/transmission/web/
             initialDelaySeconds: 30
             periodSeconds: 10
           env:
