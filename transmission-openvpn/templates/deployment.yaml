@@ -43,16 +43,26 @@ spec:
               containerPort: 9091
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: /transmission/web/
-              port: http
-            initialDelaySeconds: 30
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  wget --quiet --tries=1 --spider \
+                  --header "Authorization: Basic $(echo -n ${TRANSMISSION_RPC_USERNAME}:${TRANSMISSION_RPC_PASSWORD} | base64)" \
+                  http://localhost:9091/transmission/web/
+            initialDelaySeconds: 45
             periodSeconds: 20
           readinessProbe:
-            httpGet:
-              path: /transmission/web/
-              port: http
-            initialDelaySeconds: 15
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  wget --quiet --tries=1 --spider \
+                  --header "Authorization: Basic $(echo -n ${TRANSMISSION_RPC_USERNAME}:${TRANSMISSION_RPC_PASSWORD} | base64)" \
+                  http://localhost:9091/transmission/web/
+            initialDelaySeconds: 30
             periodSeconds: 10
           env:
             {{- range $name, $item := .Values.env }}
