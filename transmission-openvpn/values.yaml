@@ -83,10 +83,10 @@ service:
 resources:
   limits:
     cpu: 500m
-    memory: 512Mi
+    memory: 1024Mi
   requests:
-    cpu: 100m
-    memory: 256Mi
+    cpu: 300m
+    memory: 512Mi
 
 # Add this to your values.yaml
 serviceAccount:
