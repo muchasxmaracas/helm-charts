@@ -48,6 +48,8 @@ spec:
         - --cookie-refresh=1h
         - --github-user=muchasxmaracas
         - --scope=user:email read:user
+        - --set-xauthrequest=true
+        - --reverse-proxy=true
 
 ---
 apiVersion: v1
