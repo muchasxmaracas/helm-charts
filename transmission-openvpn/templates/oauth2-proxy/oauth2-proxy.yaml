@@ -102,7 +102,7 @@ metadata:
 spec:
   errors:
     status:
-      - "401"
+      - "401-403" # Catch both 401 (Unauthorized) and 403 (Forbidden)
     service:
       name: oauth2-proxy
       port: 4180
