@@ -1,40 +1,37 @@
-{{- if .Values.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "transmission-openvpn.fullname" . }}
-  labels:
-    {{- include "transmission-openvpn.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  name: transmission
+  namespace: transmission-openvpn
   annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: transmission-openvpn-transmission-auth-chain@kubernetescrd
 spec:
-  ingressClassName: {{ .Values.ingress.ingressClassName }}
-  {{- if .Values.ingress.tls }}
+  ingressClassName: traefik
   tls:
-    {{- range .Values.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
-  {{- end }}
+    - secretName: transmission-tls-secret
+      hosts:
+        - transmission.baphomet.cloud
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: transmission.baphomet.cloud
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            pathType: {{ .pathType }}
+
+          # oauth2-proxy endpoints (NO AUTH)
+          - path: /oauth2
+            pathType: Prefix
             backend:
               service:
-                # Use $ to reference the global context
-                name: {{ include "transmission-openvpn.fullname" $ }} 
+                name: oauth2-proxy
                 port:
-                  number: {{ $.Values.service.port }}
-          {{- end }}
-    {{- end }}
-{{- end }}
+                  number: 4180
+
+          # Transmission UI (AUTH REQUIRED)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: transmission-openvpn
+                port:
+                  number: 9091

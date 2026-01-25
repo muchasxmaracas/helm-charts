@@ -42,25 +42,6 @@ image:
 
 imagePullSecrets: []
 
-ingress:
-  enabled: true
-  ingressClassName: 'traefik'
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/service.preservehost: "true"
-    traefik.ingress.kubernetes.io/router.middlewares: transmission-openvpn-transmission-auth-chain@kubernetescrd
-  hosts:
-    - host: transmission.baphomet.cloud
-      paths:
-        - path: /
-          pathType: Prefix           # catch everything
-  tls:
-    - secretName: transmission-tls-secret
-      hosts:
-        - transmission.baphomet.cloud
-
 podAnnotations: {}
 podLabels: {}
 
