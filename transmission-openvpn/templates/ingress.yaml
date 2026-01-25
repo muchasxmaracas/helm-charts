@@ -8,6 +8,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.priority: "10"
     traefik.ingress.kubernetes.io/router.middlewares: transmission-openvpn-transmission-auth-chain@kubernetescrd
+    traefik.ingress.kubernetes.io/router.rule: Host(`transmission.baphomet.cloud`) && PathPrefix(`/`)
 spec:
   ingressClassName: traefik
   tls:
