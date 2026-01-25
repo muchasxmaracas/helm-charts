@@ -41,6 +41,7 @@ spec:
         - --upstream=static://200
         - --http-address=0.0.0.0:4180
         - --proxy-prefix=/oauth2        # Tells the proxy its base path
+        - --cookie-domain=transmission.baphomet.cloud
         - --whitelist-domain=transmission.baphomet.cloud
         - --cookie-secure=true
         - --cookie-httponly=true
@@ -52,7 +53,6 @@ spec:
         - --cookie-samesite=lax
         - --skip-provider-button=true        # <--- This kills the "Found" white page
         - --skip-auth-preflight=true         # <--- Helps with browser asset requests
-        - --cookie-domain=.baphomet.cloud    # Ensure the dot is there for subdomains
         - --skip-auth-regex=^\/oauth2\/.*
         - --skip-auth-regex=^\/favicon\.ico$
 ---
@@ -105,9 +105,9 @@ metadata:
   name: auth-signin-redirect
   namespace: transmission-openvpn
 spec:
-  errors:
+errors:
     status:
-      - "401-403" # Catch both 401 (Unauthorized) and 403 (Forbidden)
+      - "401-403"
     service:
       name: oauth2-proxy
       port: 4180
