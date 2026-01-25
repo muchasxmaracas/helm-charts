@@ -53,7 +53,7 @@ spec:
           - --skip-auth-preflight=true
           - --skip-auth-regex=^\/oauth2\/.*
           - --skip-auth-regex=^\/favicon\.ico$
-          - --redirect-url=https://transmission.baphomet.cloud/*   # <-- ADD THIS
+          - --whitelist-domain=.baphomet.cloud
 ---
 apiVersion: v1
 kind: Service
