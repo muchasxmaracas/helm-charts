@@ -65,6 +65,7 @@ spec:
   selector:
     app: oauth2-proxy
 ---
+# AUTH Middleware
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
@@ -89,3 +90,29 @@ spec:
     regex: "^https://transmission.baphomet.cloud/$"
     replacement: "https://transmission.baphomet.cloud/transmission/web/"
     permanent: true
+---
+# ERRORS Middleware
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: transmission-auth-errors
+  namespace: transmission-openvpn
+spec:
+  errors:
+    status:
+      - "401"
+    service:
+      name: oauth2-proxy
+      port: 4180
+    query: /oauth2/sign_in
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: transmission-auth-chain
+  namespace: transmission-openvpn
+spec:
+  chain:
+    middlewares:
+      - name: transmission-auth
+      - name: transmission-auth-errors

@@ -50,7 +50,7 @@ ingress:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/service.preservehost: "true"
-    traefik.ingress.kubernetes.io/router.middlewares: transmission-openvpn-transmission-auth@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: transmission-openvpn-transmission-auth-chain@kubernetescrd
   hosts:
     - host: transmission.baphomet.cloud
       paths:
