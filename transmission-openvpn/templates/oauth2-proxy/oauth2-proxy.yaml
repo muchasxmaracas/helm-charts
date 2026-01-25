@@ -77,7 +77,7 @@ metadata:
   namespace: transmission-openvpn
 spec:
   forwardAuth:
-    address: http://oauth2-proxy.transmission-openvpn.svc.cluster.local:4180/oauth2/check
+    address: http://oauth2-proxy.transmission-openvpn.svc.cluster.local:4180/oauth2/auth
     trustForwardHeader: true
     authResponseHeaders:
       - X-Auth-Request-User
