@@ -52,6 +52,7 @@ ingress:
     traefik.ingress.kubernetes.io/router.middlewares: >-
         transmission-openvpn-transmission-auth@kubernetescrd,
         transmission-openvpn-auth-signin-redirect@kubernetescrd
+    traefik.ingress.kubernetes.io/service.preservehost: "true"  # Helps with Host forwarding
   hosts:
     - host: transmission.baphomet.cloud
       paths:

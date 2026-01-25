@@ -44,6 +44,7 @@ spec:
         - --cookie-secure=true
         - --cookie-httponly=true
         - --cookie-refresh=1h
+        - --redirect-url=https://transmission.baphomet.cloud/*
         - --github-user=muchasxmaracas
         - --scope=user:email read:user
         - --reverse-proxy=true
