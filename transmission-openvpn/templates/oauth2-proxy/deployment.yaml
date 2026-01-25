@@ -47,7 +47,7 @@ spec:
           - --redirect-url=https://transmission.baphomet.cloud/oauth2/callback
           - --whitelist-domain=.baphomet.cloud
           - --set-xauthrequest=true
-          - --skip-provider-button=true
+          - --skip-provider-button=false
           - --auth-logging=true
           - --request-logging=true
           - --standard-logging=true
