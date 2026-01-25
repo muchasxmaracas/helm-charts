@@ -8,6 +8,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.middlewares: transmission-openvpn-transmission-auth@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: forward-auth
 spec:
   ingressClassName: traefik
   tls:
