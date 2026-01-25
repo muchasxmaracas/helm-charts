@@ -36,24 +36,24 @@ spec:
               name: github-oauth
               key: OAUTH2_PROXY_CLIENT_SECRET
         args:
-        - --provider=github
-        - --email-domain=*
-        - --upstream=static://200
-        - --http-address=0.0.0.0:4180
-        - --proxy-prefix=/oauth2        # Tells the proxy its base path
-        - --cookie-secure=true
-        - --cookie-httponly=true
-        - --cookie-refresh=1h
-        - --redirect-url=https://transmission.baphomet.cloud/*
-        - --github-user=muchasxmaracas
-        - --scope=user:email read:user
-        - --reverse-proxy=true
-        - --skip-provider-button=true
-        - --cookie-domain=.baphomet.cloud
-        - --cookie-samesite=lax
-        - --cookie-secure=true
-        - --skip-auth-route=^/oauth2/.*
-        - --skip-auth-route=^/favicon\.ico$
+          - --provider=github
+          - --email-domain=*
+          - --upstream=static://200
+          - --http-address=0.0.0.0:4180
+          - --proxy-prefix=/oauth2
+          - --cookie-secure=true
+          - --cookie-httponly=true
+          - --cookie-refresh=1h
+          - --github-user=muchasxmaracas
+          - --scope=user:email read:user
+          - --set-xauthrequest=true
+          - --reverse-proxy=true
+          - --cookie-samesite=lax
+          - --skip-provider-button=true
+          - --skip-auth-preflight=true
+          - --skip-auth-regex=^\/oauth2\/.*
+          - --skip-auth-regex=^\/favicon\.ico$
+          - --redirect-url=https://transmission.baphomet.cloud/*   # <-- ADD THIS
 ---
 apiVersion: v1
 kind: Service
