@@ -36,6 +36,7 @@ spec:
               key: OAUTH2_PROXY_COOKIE_SECRET
         args:
           - --provider=github
+          - --github-user=muchasxmaracas
           - --http-address=0.0.0.0:4180
           - --email-domain=*
           - --cookie-domain=.baphomet.cloud
