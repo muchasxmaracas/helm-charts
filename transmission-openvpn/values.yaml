@@ -49,21 +49,14 @@ ingress:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.middlewares: >-
-        transmission-openvpn-transmission-auth@kubernetescrd,
-        transmission-openvpn-auth-signin-redirect@kubernetescrd
-    traefik.ingress.kubernetes.io/service.preservehost: "true"  # Helps with Host forwarding
-    force-reconcile: "1"
+    traefik.ingress.kubernetes.io/service.preservehost: "true"
+    # temporary, to force Traefik to notice changes
+    force-reconcile: "20250125-v3"    # change this value when you need to force again
   hosts:
     - host: transmission.baphomet.cloud
       paths:
         - path: /
-          pathType: ImplementationSpecific
-          backend:
-            service:
-              name: oauth2-proxy   # ← CHANGE TO OAUTH2-PROXY SERVICE NAME
-              port:
-                number: 4180
+          pathType: Prefix           # catch everything
   tls:
     - secretName: transmission-tls-secret
       hosts:
