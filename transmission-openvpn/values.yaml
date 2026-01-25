@@ -49,15 +49,13 @@ ingress:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
+    # ONLY the Auth and Error handlers here
     traefik.ingress.kubernetes.io/router.middlewares: >-
         transmission-openvpn-auth-signin-redirect@kubernetescrd,
-        transmission-openvpn-transmission-auth@kubernetescrd,
-        transmission-openvpn-transmission-redirect@kubernetescrd
+        transmission-openvpn-transmission-auth@kubernetescrd
   hosts:
     - host: transmission.baphomet.cloud
       paths:
-        - path: /        # Root path for the redirect
-          pathType: Prefix
         - path: /transmission/web/
           pathType: ImplementationSpecific
         - path: /transmission/rpc
