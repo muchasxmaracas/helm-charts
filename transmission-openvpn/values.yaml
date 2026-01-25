@@ -53,6 +53,7 @@ ingress:
         transmission-openvpn-transmission-auth@kubernetescrd,
         transmission-openvpn-auth-signin-redirect@kubernetescrd
     traefik.ingress.kubernetes.io/service.preservehost: "true"  # Helps with Host forwarding
+    force-reconcile: "1"
   hosts:
     - host: transmission.baphomet.cloud
       paths:
