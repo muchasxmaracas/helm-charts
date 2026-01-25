@@ -41,8 +41,8 @@ spec:
         - --upstream=static://200
         - --http-address=0.0.0.0:4180
         - --proxy-prefix=/oauth2        # Tells the proxy its base path
-        - --cookie-domain=.baphomet.cloud
-        - --whitelist-domain=.baphomet.cloud
+        - --cookie-domain=transmission.baphomet.cloud
+        - --whitelist-domain=transmission.baphomet.cloud
         - --cookie-secure=true
         - --cookie-httponly=true
         - --cookie-refresh=1h
@@ -50,6 +50,7 @@ spec:
         - --scope=user:email read:user
         - --set-xauthrequest=true
         - --reverse-proxy=true
+        - --cookie-samesite=lax
 
 ---
 apiVersion: v1
@@ -74,12 +75,13 @@ metadata:
   namespace: transmission-openvpn
 spec:
   forwardAuth:
-    # Use the internal K8s service name instead of the public URL
     address: http://oauth2-proxy.transmission-openvpn.svc.cluster.local:4180/oauth2/check
     trustForwardHeader: true
+    # This ensures the browser's cookie actually reaches the proxy's check endpoint
     authResponseHeaders:
       - X-Auth-Request-User
       - X-Auth-Request-Email
+      - Set-Cookie # VERY IMPORTANT: Allows the proxy to set the session cookie
 ---
 # REDIRECT Root Path Middleware
 apiVersion: traefik.io/v1alpha1
