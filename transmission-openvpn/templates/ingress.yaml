@@ -1,35 +1,23 @@
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: transmission-ingress
+  name: transmission-app
   namespace: transmission-openvpn
   annotations:
-    # Traefik entrypoint and TLS
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.priority: "100"
-    traefik.ingress.kubernetes.io/router.middlewares: transmission-openvpn-transmission-auth-chain@kubernetescrd
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    traefik.ingress.kubernetes.io/router.middlewares: transmission-openvpn-transmission-auth@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:
-    - hosts:
+    - secretName: transmission-tls-secret
+      hosts:
         - transmission.baphomet.cloud
-      secretName: transmission-tls-secret
   rules:
     - host: transmission.baphomet.cloud
       http:
         paths:
-          # OAuth2 proxy path
-          - path: /oauth2
-            pathType: Prefix
-            backend:
-              service:
-                name: oauth2-proxy
-                port:
-                  number: 4180
-          # Main app path
           - path: /
             pathType: Prefix
             backend:
