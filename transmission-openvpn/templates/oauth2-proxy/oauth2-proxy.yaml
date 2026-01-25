@@ -41,8 +41,6 @@ spec:
         - --upstream=static://200
         - --http-address=0.0.0.0:4180
         - --proxy-prefix=/oauth2        # Tells the proxy its base path
-        - --cookie-domain=.baphomet.cloud
-        - --whitelist-domain=.baphomet.cloud
         - --cookie-secure=true
         - --cookie-httponly=true
         - --cookie-refresh=1h
@@ -55,6 +53,8 @@ spec:
         - --skip-auth-preflight=true         # <--- Helps with browser asset requests
         - --skip-auth-regex=^\/oauth2\/.*
         - --skip-auth-regex=^\/favicon\.ico$
+        - --request-logging=true
+        - --verbose=true
 ---
 apiVersion: v1
 kind: Service
@@ -78,18 +78,17 @@ metadata:
   namespace: transmission-openvpn
 spec:
   forwardAuth:
-    address: http://oauth2-proxy.transmission-openvpn.svc.cluster.local:4180/oauth2/check
+    address: http://oauth2-proxy.transmission-openvpn.svc.cluster.local:4180/oauth2/auth
     trustForwardHeader: true
-    # This ensures the browser's cookie actually reaches the proxy's check endpoint
     authResponseHeaders:
       - X-Auth-Request-User
       - X-Auth-Request-Email
-      - Set-Cookie # VERY IMPORTANT: Allows the proxy to set the session cookie
+      - Set-Cookie
     authRequestHeaders:
       - Cookie
       - X-Forwarded-Proto
       - X-Forwarded-Host
-      - X-Forwarded-Uri    # Critical for the proxy to know where you were going
+      - X-Forwarded-Uri
       - X-Forwarded-Method
       - Host
 ---
