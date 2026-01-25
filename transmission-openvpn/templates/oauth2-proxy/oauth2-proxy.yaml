@@ -110,13 +110,13 @@ metadata:
   name: auth-signin-redirect
   namespace: transmission-openvpn
 spec:
-errors:
-    status:
-      - "401-403"
-    service:
-      name: oauth2-proxy
-      port: 4180
-    query: "/auth/start?rd={url}"
+  errors:
+      status:
+        - "401-403"
+      service:
+        name: oauth2-proxy
+        port: 4180
+      query: "/auth/start?rd={url}"
 ---
 # Separate Ingress without middleware to prevent Traefik loops
 apiVersion: networking.k8s.io/v1
