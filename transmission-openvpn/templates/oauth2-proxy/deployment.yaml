@@ -51,3 +51,4 @@ spec:
           - --auth-logging=true
           - --request-logging=true
           - --standard-logging=true
+          - --reverse-proxy=true
