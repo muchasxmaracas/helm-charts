@@ -38,7 +38,7 @@ spec:
         args:
           - --provider=github
           - --email-domain=*
-          - --upstream=static://200
+          - --upstream=http://transmission-openvpn.transmission-openvpn.svc.cluster.local:9091
           - --http-address=0.0.0.0:4180
           - --proxy-prefix=/oauth2
           - --cookie-secure=true
