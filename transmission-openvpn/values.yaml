@@ -55,14 +55,14 @@ ingress:
     traefik.ingress.kubernetes.io/service.preservehost: "true"  # Helps with Host forwarding
   hosts:
     - host: transmission.baphomet.cloud
-          paths:
-            - path: /
-              pathType: ImplementationSpecific
-              backend:
-                service:
-                  name: oauth2-proxy   # ← CHANGE TO OAUTH2-PROXY SERVICE NAME
-                  port:
-                    number: 4180
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: oauth2-proxy   # ← CHANGE TO OAUTH2-PROXY SERVICE NAME
+              port:
+                number: 4180
   tls:
     - secretName: transmission-tls-secret
       hosts:
