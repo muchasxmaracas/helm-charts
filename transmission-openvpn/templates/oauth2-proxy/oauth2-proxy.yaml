@@ -40,9 +40,9 @@ spec:
         - --email-domain=*
         - --upstream=static://200
         - --http-address=0.0.0.0:4180
-        - --proxy-prefix=/auth       # Tells the proxy its base path
-        - --cookie-domain=transmission.baphomet.cloud
-        - --whitelist-domain=transmission.baphomet.cloud
+        - --proxy-prefix=/oauth2        # Tells the proxy its base path
+        - --cookie-domain=.baphomet.cloud
+        - --whitelist-domain=.baphomet.cloud
         - --cookie-secure=true
         - --cookie-httponly=true
         - --cookie-refresh=1h
@@ -55,7 +55,7 @@ spec:
         - --skip-auth-preflight=true         # <--- Helps with browser asset requests
         - --skip-auth-regex=^\/oauth2\/.*
         - --skip-auth-regex=^\/favicon\.ico$
-        - --cookie-samesite=none
+        - --trusted-ip=0.0.0.0/0
 ---
 apiVersion: v1
 kind: Service
@@ -90,6 +90,8 @@ spec:
       - Cookie
       - X-Forwarded-Proto
       - X-Forwarded-Host
+      - X-Forwarded-Uri    # Critical for the proxy to know where you were going
+      - X-Forwarded-Method
 ---
 # REDIRECT Root Path Middleware
 apiVersion: traefik.io/v1alpha1
@@ -116,7 +118,7 @@ spec:
       service:
         name: oauth2-proxy
         port: 4180
-      query: "/auth/start?rd={url}"
+      query: "/oauth2/start?rd={url}"
 ---
 # Separate Ingress without middleware to prevent Traefik loops
 apiVersion: networking.k8s.io/v1
@@ -136,7 +138,7 @@ spec:
   - host: transmission.baphomet.cloud # DOUBLE CHECK THE SPELLING
     http:
       paths:
-      - path: /auth
+      - path: /oauth2
         pathType: Prefix
         backend:
           service:
