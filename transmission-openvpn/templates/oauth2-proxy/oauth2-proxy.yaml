@@ -53,6 +53,8 @@ spec:
         - --skip-provider-button=true        # <--- This kills the "Found" white page
         - --skip-auth-preflight=true         # <--- Helps with browser asset requests
         - --cookie-domain=.baphomet.cloud    # Ensure the dot is there for subdomains
+        - --skip-auth-regex=^\/oauth2\/.*
+        - --skip-auth-regex=^\/favicon\.ico$
 ---
 apiVersion: v1
 kind: Service
