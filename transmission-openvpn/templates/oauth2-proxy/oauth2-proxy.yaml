@@ -104,3 +104,30 @@ spec:
     middlewares:
       - name: transmission-auth
       - name: transmission-auth-errors
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: transmission-oauth2
+  namespace: transmission-openvpn
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.priority: "100"
+spec:
+  ingressClassName: traefik
+  tls:
+    - secretName: transmission-tls-secret
+      hosts:
+        - transmission.baphomet.cloud
+  rules:
+    - host: transmission.baphomet.cloud
+      http:
+        paths:
+          - path: /oauth2
+            pathType: Prefix
+            backend:
+              service:
+                name: oauth2-proxy
+                port:
+                  number: 4180
