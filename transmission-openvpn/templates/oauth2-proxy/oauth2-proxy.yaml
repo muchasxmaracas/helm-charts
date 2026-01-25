@@ -114,7 +114,6 @@ metadata:
   namespace: transmission-openvpn
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    # NO auth middleware here!
 spec:
   ingressClassName: traefik
   tls:
@@ -122,7 +121,7 @@ spec:
     - transmission.baphomet.cloud
     secretName: transmission-tls-secret
   rules:
-  - host: transmission.baphomet.cloud
+  - host: transmission.baphomet.cloud # DOUBLE CHECK THE SPELLING
     http:
       paths:
       - path: /oauth2
