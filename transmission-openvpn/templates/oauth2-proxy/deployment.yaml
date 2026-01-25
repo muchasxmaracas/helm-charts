@@ -52,3 +52,4 @@ spec:
           - --request-logging=true
           - --standard-logging=true
           - --reverse-proxy=true
+          - --scope=user:email
