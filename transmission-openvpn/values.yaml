@@ -64,11 +64,11 @@ service:
 # Resources are for QoS on burst
 resources:
   requests:
-    cpu: 25m
-    memory: 713M
+    cpu: 125m
+    memory: 1835M
   limits:
-    cpu: 97m
-    memory: 3051M
+    cpu: 197m
+    memory: 2885M
 
 # Add this to your values.yaml
 serviceAccount:
