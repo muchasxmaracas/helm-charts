@@ -72,11 +72,11 @@ spec:
           value: "*"
         volumeMounts:
         - name: panel-data
-          subPath: var
-          mountPath: /app/var
-        - name: panel-data
           subPath: storage
-          mountPath: /app/storage
+          mountPath: /var/www/html/storage
+        - name: panel-data
+          subPath: public_themes
+          mountPath: /var/www/html/public/themes
   volumeClaimTemplates:
   - metadata:
       name: panel-data

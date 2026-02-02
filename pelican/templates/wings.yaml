@@ -22,12 +22,25 @@ spec:
                 app: wings
             topologyKey: {{ .topologyKey }}
       {{- end }}
+      initContainers:
+      - name: init-config
+        image: busybox
+        # Changed /tmp/config.yml to /tmp/secret/config.yml
+        command: ['sh', '-c', 'if [ ! -f /etc/pelican/config.yml ]; then cp /tmp/secret/config.yml /etc/pelican/config.yml; fi']
+        volumeMounts:
+        - name: config-temp
+          mountPath: /tmp/secret # Mount the secret to its own folder
+        - name: wings-storage
+          subPath: config
+          mountPath: /etc/pelican
       containers:
       - name: wings
         image: {{ .Values.wings.image }}
         env:
-          - name: DOCKER_HOST
-            value: tcp://localhost:2375
+        - name: DOCKER_HOST
+          value: tcp://localhost:2375
+        - name: DOCKER_TLS_CERTDIR
+          value: "" # Disables TLS since you're using localhost 2375
         volumeMounts:
         - name: wings-storage
           subPath: config
@@ -41,6 +54,10 @@ spec:
         - name: wings-storage
           subPath: docker-data
           mountPath: /var/lib/docker
+      volumes:
+      - name: config-temp
+        secret:
+          secretName: wings-config
   volumeClaimTemplates:
   - metadata:
       name: wings-storage

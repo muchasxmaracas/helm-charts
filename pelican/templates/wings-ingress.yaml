@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wings
+  namespace: pelican
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    # Essential for WebSockets (Console)
+    traefik.ingress.kubernetes.io/router.middlewares: pelican-pelican-https-headers@kubernetescrd
+    traefik.ingress.kubernetes.io/router.response-forwarding-flush-interval: "100ms"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  rules:
+  - host: node1.baphomet.cloud # Replace with your Node FQDN
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wings
+            port:
+              number: 8080
+  tls:
+  - hosts:
+    - node1.baphomet.cloud
+    secretName: node1-tls-secret

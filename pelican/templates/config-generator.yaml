@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pelican-config-generator
+  namespace: pelican
+spec:
+  template:
+    spec:
+      serviceAccountName: pelican-config-sa # Needs permission to patch secrets
+      containers:
+      - name: generator
+        image: alpine:latest
+        command:
+        - "/bin/sh"
+        - "-c"
+        - |
+          apk add --no-cache curl jq
+          # Fetch config from Panel API
+          CONFIG=$(curl -s -X GET "$PANEL_URL/api/remote/nodes/$NODE_UUID/configuration" \
+            -H "Authorization: Bearer $API_TOKEN" \
+            -H "Accept: application/json")
+          
+          # Clean up the JSON and force the DinD/Proxy overrides
+          FINAL_CONFIG=$(echo $CONFIG | jq '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
+          
+          # Patch the K8s Secret
+          kubectl create secret generic wings-config \
+            --from-literal=config.yml="$FINAL_CONFIG" \
+            --dry-run=client -o yaml | kubectl apply -f -
+        env:
+        - name: PANEL_URL
+          value: "https://game.baphomet.cloud"
+        - name: API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: pelican-api-token
+              key: token
+        - name: NODE_UUID
+          value: "43b720df-d7b8-4001-b786-161234165d8f"
+      restartPolicy: OnFailure
