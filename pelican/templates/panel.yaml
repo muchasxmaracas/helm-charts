@@ -62,6 +62,8 @@ spec:
           value: ":80" # Force Caddy to listen on HTTP port 80 only
         - name: APP_SERVICE_SSL
           value: "false"
+        - name: TRUSTED_PROXIES
+          value: "*"
         volumeMounts:
         - name: panel-data
           subPath: var
