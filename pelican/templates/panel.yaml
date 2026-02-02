@@ -60,6 +60,8 @@ spec:
           value: "true" # Tells Pelican it is behind an Ingress/Proxy
         - name: SERVER_NAME
           value: ":80" # Force Caddy to listen on HTTP port 80 only
+        - name: APP_SERVICE_SSL
+          value: "false"
         volumeMounts:
         - name: panel-data
           subPath: var
