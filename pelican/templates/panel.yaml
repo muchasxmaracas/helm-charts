@@ -21,8 +21,6 @@ spec:
         env:
         - name: APP_URL
           value: {{ .Values.panel.extraEnv.APP_URL | quote }}
-        - name: SERVER_NAME
-          value: {{ .Values.panel.extraEnv.SERVER_NAME | quote }}
         - name: APP_ENV
           value: {{ .Values.panel.extraEnv.APP_ENV | quote }}
         - name: APP_DEBUG

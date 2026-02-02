@@ -30,7 +30,6 @@ panel:
   storageSize: 1Gi
   # ConfigMap referenced as pelican-config
   extraEnv:
-    SERVER_NAME: "game.baphomet.cloud"
     APP_ENV: production
     APP_DEBUG: "false" 
     APP_URL: https://game.baphomet.cloud
