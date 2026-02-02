@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.database.config.host }}
+spec:
+  selector:
+    app: pelican-db
+  ports:
+  - port: {{ .Values.database.config.port | int }}
+    targetPort: 3306

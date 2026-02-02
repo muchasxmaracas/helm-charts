@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pelican
+spec:
+  serviceName: pelican
+  replicas: {{ .Values.panel.replicas }}
+  selector:
+    matchLabels:
+      app: pelican
+  template:
+    metadata:
+      labels:
+        app: pelican
+    spec:
+      initContainers:
+      - name: downloader
+        image: curlimages/curl
+        command: ["/bin/ash", "-c"]
+        args:
+          - |
+            if [ ! -f /app/index.php ]; then
+              cd /app && curl -Lo panel.tar.gz https://github.com/pelican-dev/panel/releases/latest/download/panel.tar.gz
+              tar -xvzf panel.tar.gz && rm panel.tar.gz
+              chown -R 100:100 /app
+            fi
+        volumeMounts:
+        - name: pelican-storage
+          mountPath: /app
+      containers:
+      - name: pelican
+        image: {{ .Values.panel.image }}
+        ports:
+        - name: http
+          containerPort: 80
+        envFrom:
+        - configMapRef:
+            name: pelican-config
+        - secretRef:
+            name: mysql-config
+        volumeMounts:
+        - name: pelican-storage
+          subPath: var
+          mountPath: /app/var
+        - name: pelican-storage
+          subPath: storage
+          mountPath: /app/storage
+  volumeClaimTemplates:
+  - metadata:
+      name: pelican-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.panel.storageSize }}

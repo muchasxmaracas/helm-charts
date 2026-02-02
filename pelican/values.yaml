@@ -1,0 +1,48 @@
+# Global settings for the Pelican Stack
+global:
+  namespace: pelican
+  domain: game.baphomet.cloud
+
+# Ingress Configuration
+ingress:
+  enabled: true
+  host: game.baphomet.cloud
+  clusterIssuer: letsencrypt-prod
+  secretName: tls-pelican-secret
+
+# Database (MariaDB) Settings
+database:
+  image: mariadb:11.4
+  storageSize: 4Gi
+  # These map to your mysql-config secret
+  config:
+    host: "pelican-db"
+    port: "3306"
+    database: "pelican"
+    user: "pelican_user"
+    password: "change_me_securely" 
+
+# Pelican Panel (The Web UI)
+panel:
+  image: ghcr.io/shiipou/pelican-k8s/panel
+  imagePullPolicy: Always
+  replicas: 1
+  storageSize: 1Gi
+  # ConfigMap referenced as pelican-config
+  extraEnv:
+    APP_ENV: production
+    APP_DEBUG: "false"
+    APP_URL: https://game.baphomet.cloud
+    TIMEZONE: UTC
+
+# Wings (The Game Runners)
+wings:
+  image: ghcr.io/pelican-dev/wings:v1.0.0-beta3
+  replicas: 5
+  storageSize: 10Gi # Increased because game files live here
+  dind:
+    image: docker:dind
+    privileged: true
+  # Prevents multiple wings pods on the same physical node
+  affinity:
+    topologyKey: "kubernetes.io/hostname"

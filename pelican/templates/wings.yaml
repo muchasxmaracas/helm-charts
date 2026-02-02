@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: wings
+spec:
+  serviceName: wings
+  replicas: {{ .Values.wings.replicas }}
+  selector:
+    matchLabels:
+      app: wings
+  template:
+    metadata:
+      labels:
+        app: wings
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: wings
+            topologyKey: {{ .Values.wings.affinity.topologyKey }}
+      containers:
+      - name: wings
+        image: {{ .Values.wings.image }}
+        env:
+          - name: DOCKER_HOST
+            value: tcp://localhost:2375
+        volumeMounts:
+        - name: wings-data
+          mountPath: /etc/pelican
+      - name: docker
+        image: {{ .Values.wings.dind.image }}
+        securityContext:
+          privileged: true
+        command: ["dockerd", "--host", "tcp://127.0.0.1:2375"]
+        volumeMounts:
+        - name: wings-data
+          subPath: docker
+          mountPath: /var/lib/docker
+  volumeClaimTemplates:
+  - metadata:
+      name: wings-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.wings.storageSize }}
