@@ -1,11 +1,13 @@
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: pelican-headers
+  name: pelican-https-headers
+  namespace: pelican
 spec:
   headers:
+    # This forces the header to 'https' for the backend
     customRequestHeaders:
       X-Forwarded-Proto: "https"
-    sslRedirect: true
+    # This tells Traefik to trust the incoming TLS
     sslProxyHeaders:
       X-Forwarded-Proto: "https"

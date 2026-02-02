@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: pelican
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: {{ .Release.Namespace }}-pelican-headers@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: pelican-pelican-https-headers@kubernetescrd
     cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer }}
 spec:
   tls:
