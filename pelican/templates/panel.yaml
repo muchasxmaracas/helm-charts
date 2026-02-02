@@ -63,7 +63,7 @@ spec:
         - name: APP_SERVICE_SSL
           value: "false"
         - name: CADDY_TRUSTED_PROXIES
-          value: "trusted_proxies static 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16"
+          value: "trusted_proxies static private_ranges"
         - name: TRUSTED_PROXIES
           value: "*"
         volumeMounts:
