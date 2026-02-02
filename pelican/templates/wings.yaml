@@ -13,13 +13,15 @@ spec:
       labels:
         app: wings
     spec:
+      {{- with .Values.wings.affinity }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchLabels:
                 app: wings
-            topologyKey: {{ .Values.wings.affinity.topologyKey }}
+            topologyKey: {{ .topologyKey }}
+      {{- end }}
       containers:
       - name: wings
         image: {{ .Values.wings.image }}
@@ -27,7 +29,8 @@ spec:
           - name: DOCKER_HOST
             value: tcp://localhost:2375
         volumeMounts:
-        - name: wings-data
+        - name: wings-storage
+          subPath: config
           mountPath: /etc/pelican
       - name: docker
         image: {{ .Values.wings.dind.image }}
@@ -35,14 +38,14 @@ spec:
           privileged: true
         command: ["dockerd", "--host", "tcp://127.0.0.1:2375"]
         volumeMounts:
-        - name: wings-data
-          subPath: docker
+        - name: wings-storage
+          subPath: docker-data
           mountPath: /var/lib/docker
   volumeClaimTemplates:
   - metadata:
-      name: wings-data
+      name: wings-storage
     spec:
-      accessModes: ["ReadWriteOnce"]
+      accessModes: [ {{ .Values.persistence.wings.accessMode | quote }} ]
       resources:
         requests:
-          storage: {{ .Values.wings.storageSize }}
+          storage: {{ .Values.persistence.wings.size | quote }}

@@ -46,3 +46,15 @@ wings:
   # Prevents multiple wings pods on the same physical node
   affinity:
     topologyKey: "kubernetes.io/hostname"
+
+# storageClass: "longhorn" # Optional: Specify if you aren't using the default provider
+persistence:
+  database:
+    size: 5Gi
+    accessMode: ReadWriteOnce
+  panel:
+    size: 2Gi
+    accessMode: ReadWriteOnce
+  wings:
+    size: 20Gi # Game files are huge, this needs to be the largest
+    accessMode: ReadWriteOnce
