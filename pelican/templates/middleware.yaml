@@ -1,0 +1,11 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: pelican-headers
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Proto: "https"
+    sslRedirect: true
+    sslProxyHeaders:
+      X-Forwarded-Proto: "https"
