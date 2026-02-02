@@ -24,7 +24,7 @@ database:
 
 # Pelican Panel (The Web UI)
 panel:
-  image: ghcr.io/shiipou/pelican-k8s/panel
+  image: ghcr.io/pelican-dev/panel:v1.0.0-beta31
   imagePullPolicy: Always
   replicas: 1
   storageSize: 1Gi
