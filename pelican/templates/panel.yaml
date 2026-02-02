@@ -41,6 +41,8 @@ spec:
             secretKeyRef:
               name: mysql-config
               key: DB_PASSWORD
+        - name: APP_EMAIL
+          value: {{ .Values.panel.extraEnv.APP_EMAIL | quote }}
         volumeMounts:
         - name: panel-data
           subPath: var

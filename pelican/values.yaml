@@ -35,6 +35,7 @@ panel:
     APP_DEBUG: "false" 
     APP_URL: https://game.baphomet.cloud
     TIMEZONE: UTC
+    APP_EMAIL: "sandromarton95@gmail.com" # Dummy email for Caddy SSL management
 
 # Wings (The Game Runners)
 wings:
