@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: pelican
-        image: ghcr.io/shiipou/pelican-k8s/panel
+        image: {{ .Values.panel.image }}
         volumeMounts:
         - name: panel-data
           subPath: var
