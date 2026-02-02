@@ -63,7 +63,7 @@ spec:
         - name: APP_SERVICE_SSL
           value: "false"
         - name: TRUSTED_PROXIES
-          value: "*"
+          value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
         volumeMounts:
         - name: panel-data
           subPath: var
