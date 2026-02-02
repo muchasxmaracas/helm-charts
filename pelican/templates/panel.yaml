@@ -18,6 +18,29 @@ spec:
       containers:
       - name: pelican
         image: {{ .Values.panel.image }}
+        env:
+        - name: APP_URL
+          value: {{ .Values.panel.extraEnv.APP_URL | quote }}
+        - name: SERVER_NAME
+          value: {{ .Values.panel.extraEnv.SERVER_NAME | quote }}
+        - name: APP_ENV
+          value: {{ .Values.panel.extraEnv.APP_ENV | quote }}
+        - name: APP_DEBUG
+          value: {{ .Values.panel.extraEnv.APP_DEBUG | quote }}
+        - name: TIMEZONE
+          value: {{ .Values.panel.extraEnv.TIMEZONE | quote }}
+        - name: APP_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mysql-config
+              key: APP_KEY
+        - name: DB_HOST
+          value: {{ .Values.database.config.host | quote }}
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-config
+              key: DB_PASSWORD
         volumeMounts:
         - name: panel-data
           subPath: var
