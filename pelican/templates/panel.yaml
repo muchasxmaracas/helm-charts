@@ -58,6 +58,10 @@ spec:
               key: LE_EMAIL
         - name: CADDY_SERVER_EXTRA_DIRECTIVES
           value: "email sandromarton95@gmail.com"
+        - name: CADDY_PROXIED
+          value: "true" # Tells Pelican it is behind an Ingress/Proxy
+        - name: SERVER_NAME
+          value: ":80" # Force Caddy to listen on HTTP port 80 only
         volumeMounts:
         - name: panel-data
           subPath: var
