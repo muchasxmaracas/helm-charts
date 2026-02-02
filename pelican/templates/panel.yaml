@@ -2,10 +2,18 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: pelican
+  labels:
+    {{- include "pelican.labels" . | nindent 4 }}
 spec:
   serviceName: pelican
   replicas: 1
+  selector:
+    matchLabels:
+      {{- include "pelican.selectorLabels" . | nindent 6 }}
   template:
+    metadata:
+      labels:
+        {{- include "pelican.selectorLabels" . | nindent 8 }}
     spec:
       containers:
       - name: pelican
@@ -21,7 +29,7 @@ spec:
   - metadata:
       name: panel-data
     spec:
-      accessModes: [ {{ .Values.persistence.panel.accessMode | quote }} ]
+      accessModes: [ {{ .Values.persistence.panel.accessMode | default "ReadWriteOnce" | quote }} ]
       resources:
         requests:
-          storage: {{ .Values.persistence.panel.size | quote }}
+          storage: {{ .Values.persistence.panel.size | default "2Gi" | quote }}
