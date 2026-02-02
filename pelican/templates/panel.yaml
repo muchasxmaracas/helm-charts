@@ -15,6 +15,14 @@ spec:
       labels:
         {{- include "pelican.selectorLabels" . | nindent 8 }}
     spec:
+      initContainers:
+      - name: volume-permissions
+        image: busybox
+        command: ["sh", "-c", "mkdir -p /var/www/html/storage/logs /var/www/html/storage/framework/sessions /var/www/html/storage/framework/views /var/www/html/storage/framework/cache /var/www/html/storage/logs/supervisord && chown -R 82:82 /var/www/html/storage"]
+        volumeMounts:
+        - name: panel-data
+          subPath: storage
+          mountPath: /var/www/html/storage
       containers:
       - name: pelican
         image: {{ .Values.panel.image }}
