@@ -58,5 +58,5 @@ spec:
               name: pelican-api-token
               key: token
         - name: NODE_UUID
-          value: "24100a02-99e8-4594-9cca-12a1473c1d20"
+          value: "1"
       restartPolicy: OnFailure
