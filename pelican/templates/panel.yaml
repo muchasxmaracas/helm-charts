@@ -84,7 +84,10 @@ spec:
               name: pelican-config
               key: LE_EMAIL
         - name: CADDY_SERVER_EXTRA_DIRECTIVES
-          value: "email sandromarton95@gmail.com"
+          value: |
+            header_up X-Forwarded-Proto "https"
+            header_up X-Forwarded-Port "443"
+            email sandromarton95@gmail.com
         - name: CADDY_PROXIED
           value: "true" # Tells Pelican it is behind an Ingress/Proxy
         - name: SERVER_NAME

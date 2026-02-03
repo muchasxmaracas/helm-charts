@@ -5,8 +5,10 @@ metadata:
   namespace: pelican
 spec:
   headers:
-    # Tells Pelican "The user is on HTTPS"
+    # Explicitly tell the backend the protocol is HTTPS
     customRequestHeaders:
       X-Forwarded-Proto: "https"
-    # Prevents Traefik from adding its own redirects
+      X-Forwarded-Port: "443"
+    # This prevents the "Infinite Loop" caused by Traefik trying to 
+    # redirect HTTP to HTTPS at the same time as Caddy.
     sslRedirect: false
