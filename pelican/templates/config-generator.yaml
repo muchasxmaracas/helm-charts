@@ -10,20 +10,22 @@ spec:
       serviceAccountName: pelican-config-sa
       containers:
       - name: generator
-        image: rancher/kubectl:v1.26.7
+        image: google/cloud-sdk:alpine
         command:
         - "/bin/sh"
         - "-c"
         - |
-          # Fetch config using the CORRECT endpoint
-          # Note: Removed /configuration from the end
+          # Install jq (Alpine based, so this is instant)
+          apk add --no-cache jq curl
+
+          # Fetch config using the Node endpoint
           CONFIG=$(curl -s -X GET "$PANEL_URL/api/remote/nodes/$NODE_UUID" \
             -H "Authorization: Bearer $API_TOKEN" \
             -H "Accept: application/json")
           
-          # Check if we got a 404 or error in the JSON
-          if echo "$CONFIG" | grep -q "errors"; then
-            echo "API Error detected:"
+          # Validation
+          if echo "$CONFIG" | grep -q "errors" || [ -z "$CONFIG" ]; then
+            echo "API Error or Empty Response detected:"
             echo "$CONFIG"
             exit 1
           fi
