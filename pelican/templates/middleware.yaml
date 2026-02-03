@@ -5,9 +5,8 @@ metadata:
   namespace: pelican
 spec:
   headers:
-    # This forces the header to 'https' for the backend
+    # Tells Pelican "The user is on HTTPS"
     customRequestHeaders:
       X-Forwarded-Proto: "https"
-    # This tells Traefik to trust the incoming TLS
-    sslProxyHeaders:
-      X-Forwarded-Proto: "https"
+    # Prevents Traefik from adding its own redirects
+    sslRedirect: false

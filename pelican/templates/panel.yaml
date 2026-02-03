@@ -93,6 +93,8 @@ spec:
           value: "https://game.baphomet.cloud"
         - name: APP_SERVICE_SSL
           value: "false"
+        - name: FORCE_HTTPS
+          value: "true"
         - name: CADDY_PHP_EXTRA_DIRECTIVES
           value: "env HTTPS on"
         - name: CADDY_TRUSTED_PROXIES
