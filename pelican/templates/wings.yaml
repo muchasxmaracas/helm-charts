@@ -33,18 +33,22 @@ spec:
         - name: wings-storage
           subPath: config
           mountPath: /etc/pelican
-      containers:
-      - name: wings
-        image: {{ .Values.wings.image }}
+      - name: wait-for-docker
+        image: alpine:3.20
         command: ["/bin/sh", "-c"]
         args:
         - |
-          echo "Waiting for Docker sidecar..."
+          echo "Waiting for Docker sidecar on 127.0.0.1:2375..."
+          # We loop until the port is open
+          # Since it is a sidecar, 127.0.0.1 is shared
           until nc -z 127.0.0.1 2375; do
-            sleep 1
+            echo "Docker not ready yet... sleeping"
+            sleep 2
           done
-          echo "Docker is up! Starting Wings..."
-          exec /usr/local/bin/wings
+          echo "Docker is UP! Starting Wings..."
+      containers:
+      - name: wings
+        image: {{ .Values.wings.image }}
         env:
         - name: DOCKER_HOST
           value: tcp://localhost:2375
