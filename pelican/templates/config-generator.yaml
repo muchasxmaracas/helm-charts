@@ -15,29 +15,40 @@ spec:
         - "/bin/sh"
         - "-c"
         - |
-          # Install jq (Alpine based, so this is instant)
           apk add --no-cache jq curl
-
-          # Fetch config using the Node endpoint
-          CONFIG=$(curl -s -X GET "$PANEL_URL/api/remote/nodes/$NODE_UUID" \
+          
+          echo "Fetching config for Node UUID: $NODE_UUID"
+          
+          # 1. Try fetching via the Node UUID (Remote path)
+          # Some Pelican versions expect this for the config
+          CONFIG=$(curl -s -X GET "$PANEL_URL/api/remote/nodes/$NODE_UUID/configuration" \
             -H "Authorization: Bearer $API_TOKEN" \
             -H "Accept: application/json")
+
+          # 2. If 404, try the Application API path (using UUID as ID)
+          if echo "$CONFIG" | grep -q "404"; then
+            echo "Remote path 404, trying Application API path..."
+            CONFIG=$(curl -s -X GET "$PANEL_URL/api/application/nodes/$NODE_UUID/configuration" \
+              -H "Authorization: Bearer $API_TOKEN" \
+              -H "Accept: application/json")
+          fi
           
-          # Validation
           if echo "$CONFIG" | grep -q "errors" || [ -z "$CONFIG" ]; then
-            echo "API Error or Empty Response detected:"
+            echo "CRITICAL: Panel returned an error response:"
             echo "$CONFIG"
             exit 1
           fi
 
-          # Force DinD/Proxy overrides
-          FINAL_CONFIG=$(echo $CONFIG | jq '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
+          # Apply K8s overrides
+          FINAL_CONFIG=$(echo "$CONFIG" | jq '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
           
-          # Patch the K8s Secret
+          # Patch the Secret
           echo "$FINAL_CONFIG" > /tmp/config.yml
           kubectl create secret generic wings-config \
             --from-file=config.yml=/tmp/config.yml \
             --dry-run=client -o yaml | kubectl apply -f -
+          
+          echo "SUCCESS: wings-config secret updated."
         env:
         - name: PANEL_URL
           value: "https://game.baphomet.cloud"
