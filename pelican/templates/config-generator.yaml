@@ -4,27 +4,33 @@ metadata:
   name: pelican-config-generator
   namespace: pelican
 spec:
+  ttlSecondsAfterFinished: 100
   template:
     spec:
       serviceAccountName: pelican-config-sa
       containers:
       - name: generator
-        # Using an image that already has kubectl, curl, and jq
-        image: line/kubectl-jq:latest 
+        image: bitnami/kubectl:latest
+        user: 0 # Run as root to allow package installation
         command:
         - "/bin/sh"
         - "-c"
         - |
+          # Install jq quickly
+          install_packages jq curl
+
           # Fetch config from Panel API
-          # We use -k if your internal certs are self-signed, otherwise remove it
           CONFIG=$(curl -s -X GET "$PANEL_URL/api/remote/nodes/$NODE_UUID/configuration" \
             -H "Authorization: Bearer $API_TOKEN" \
             -H "Accept: application/json")
           
-          if [ -z "$CONFIG" ]; then echo "Error: Failed to fetch config"; exit 1; fi
+          if [ -z "$CONFIG" ] || [ "$CONFIG" = "null" ]; then 
+            echo "Error: Failed to fetch config from $PANEL_URL"
+            exit 1
+          fi
 
-          # Clean up the JSON and force the DinD/Proxy overrides
-          FINAL_CONFIG=$(echo $CONFIG | jq -r '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
+          # Force DinD/Proxy overrides
+          FINAL_CONFIG=$(echo $CONFIG | jq '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
           
           # Patch the K8s Secret
           echo "$FINAL_CONFIG" > /tmp/config.yml
