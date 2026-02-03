@@ -36,6 +36,9 @@ spec:
         - name: wings-storage
           subPath: server-data
           mountPath: /var/lib/pelican/volumes
+        - name: wings-storage
+          subPath: config
+          mountPath: /etc/pelican
         - name: tmp-shared
           mountPath: /tmp
       # 2. THE WAITER (Now it will actually work!)
