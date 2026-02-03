@@ -10,16 +10,23 @@ spec:
       serviceAccountName: pelican-config-sa
       containers:
       - name: generator
-        image: bitnami/google-cloud-sdk:latest
+        image: alpine:3.20
         command:
         - "/bin/sh"
         - "-c"
         - |
-          # These tools are pre-installed in this image
+          # 1. Install the exact tools we need
+          apk add --no-cache curl jq
+
+          # 2. Install kubectl (Alpine version)
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          mv ./kubectl /usr/local/bin/kubectl
+
           NODE_ID="1"
           echo "Fetching config for Node ID: $NODE_ID..."
           
-          # Fetch the config from the verified API path
+          # 3. Fetch from the Application API
           CONFIG=$(curl -s -X GET "$PANEL_URL/api/application/nodes/$NODE_ID/configuration" \
             -H "Authorization: Bearer $API_TOKEN" \
             -H "Accept: application/json")
@@ -30,11 +37,10 @@ spec:
             exit 1
           fi
 
-          # Apply overrides for K8s networking
-          # Note: bitnami/google-cloud-sdk usually has jq, if not we use a quick python one-liner
+          # 4. Apply overrides
           FINAL_CONFIG=$(echo "$CONFIG" | jq '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
           
-          # Patch the Secret
+          # 5. Patch the Secret
           echo "$FINAL_CONFIG" > /tmp/config.yml
           kubectl create secret generic wings-config \
             --from-file=config.yml=/tmp/config.yml \
