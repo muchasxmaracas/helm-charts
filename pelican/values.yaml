@@ -40,7 +40,7 @@ panel:
 # Wings (The Game Runners)
 wings:
   image: ghcr.io/pelican-dev/wings:v1.0.0-beta3
-  replicas: 5
+  replicas: 1
   storageSize: 10Gi # Increased because game files live here
   dind:
     image: docker:dind
