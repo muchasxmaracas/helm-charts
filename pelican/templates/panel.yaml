@@ -117,6 +117,10 @@ spec:
           mountPath: /etc/caddy/Caddyfile
           subPath: Caddyfile
           readOnly: true
+      volumes:
+      - name: caddyfile-config
+        configMap:
+          name: pelican-caddyfile
   volumeClaimTemplates:
   - metadata:
       name: panel-data
@@ -125,8 +129,3 @@ spec:
       resources:
         requests:
           storage: {{ .Values.persistence.panel.size | default "2Gi" | quote }}
-
-  volumes:
-  - name: caddyfile-config
-    configMap:
-      name: pelican-caddyfile
