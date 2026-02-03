@@ -6,26 +6,30 @@ metadata:
 spec:
   template:
     spec:
-      serviceAccountName: pelican-config-sa # Needs permission to patch secrets
+      serviceAccountName: pelican-config-sa
       containers:
       - name: generator
-        image: alpine:latest
+        # Using an image that already has kubectl, curl, and jq
+        image: line/kubectl-jq:latest 
         command:
         - "/bin/sh"
         - "-c"
         - |
-          apk add --no-cache curl jq
           # Fetch config from Panel API
+          # We use -k if your internal certs are self-signed, otherwise remove it
           CONFIG=$(curl -s -X GET "$PANEL_URL/api/remote/nodes/$NODE_UUID/configuration" \
             -H "Authorization: Bearer $API_TOKEN" \
             -H "Accept: application/json")
           
+          if [ -z "$CONFIG" ]; then echo "Error: Failed to fetch config"; exit 1; fi
+
           # Clean up the JSON and force the DinD/Proxy overrides
-          FINAL_CONFIG=$(echo $CONFIG | jq '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
+          FINAL_CONFIG=$(echo $CONFIG | jq -r '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
           
           # Patch the K8s Secret
+          echo "$FINAL_CONFIG" > /tmp/config.yml
           kubectl create secret generic wings-config \
-            --from-literal=config.yml="$FINAL_CONFIG" \
+            --from-file=config.yml=/tmp/config.yml \
             --dry-run=client -o yaml | kubectl apply -f -
         env:
         - name: PANEL_URL
@@ -36,5 +40,5 @@ spec:
               name: pelican-api-token
               key: token
         - name: NODE_UUID
-          value: "43b720df-d7b8-4001-b786-161234165d8f"
+          value: "24100a02-99e8-4594-9cca-12a1473c1d20"
       restartPolicy: OnFailure
