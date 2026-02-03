@@ -85,8 +85,9 @@ spec:
               key: LE_EMAIL
         - name: CADDY_SERVER_EXTRA_DIRECTIVES
           value: |
-            header_up X-Forwarded-Proto https"
+            header_up X-Forwarded-Proto https
             email sandromarton95@gmail.com
+            env HTTPS on
         - name: CADDY_PROXIED
           value: "true" # Tells Pelican it is behind an Ingress/Proxy
         - name: SERVER_NAME
@@ -94,12 +95,9 @@ spec:
         - name: ASSET_URL
           value: "https://game.baphomet.cloud"
         - name: SERVER_NAME
-          value: ":80"
+          value: "http://:80"
         - name: CADDY_PROXIED
           value: "true"
-        # Reset this to the default keyword that the script expects
-        - name: CADDY_TRUSTED_PROXIES
-          value: "static private_ranges" 
         # Keep this for the Laravel/PHP layer to trust Traefik
         - name: TRUSTED_PROXIES
           value: "*"
