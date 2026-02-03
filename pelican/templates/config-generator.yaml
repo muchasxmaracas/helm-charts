@@ -38,7 +38,7 @@ spec:
           fi
 
           # 4. Apply overrides
-          FINAL_CONFIG=$(echo "$CONFIG" | jq '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
+          FINAL_CONFIG=$(echo "$CONFIG" | jq '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="http://game.baphomet.cloud"')
           
           # 5. Patch the Secret
           echo "$FINAL_CONFIG" > /tmp/config.yml
