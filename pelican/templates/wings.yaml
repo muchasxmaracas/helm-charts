@@ -23,6 +23,26 @@ spec:
             topologyKey: {{ .topologyKey }}
       {{- end }}
       initContainers:
+      - name: docker
+        image: {{ .Values.wings.dind.image }}
+        restartPolicy: Always # <--- This is the magic "Sidecar" flag
+        securityContext:
+          privileged: true
+        command: ["dockerd", "--host", "tcp://127.0.0.1:2375"]
+        volumeMounts:
+        - name: wings-storage
+          subPath: docker-data
+          mountPath: /var/lib/docker
+      # 2. THE WAITER (Now it will actually work!)
+      - name: wait-for-docker
+        image: alpine:3.20
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          until nc -z 127.0.0.1 2375; do
+            sleep 1
+          done
+      # 3. CONFIG SYNC
       - name: init-config
         image: busybox
         command: ['sh', '-c', 'cp /tmp/secret/config.yml /etc/pelican/config.yml']
@@ -33,27 +53,16 @@ spec:
           subPath: config
           mountPath: /etc/pelican
       containers:
+      # 4. THE MAIN APP (Starts only after Docker sidecar is READY)
       - name: wings
         image: {{ .Values.wings.image }}
         env:
         - name: DOCKER_HOST
-          value: tcp://localhost:2375
-        - name: DOCKER_TLS_CERTDIR
-          value: "" # Disables TLS since you're using localhost 2375
+          value: tcp://127.0.0.1:2375
         volumeMounts:
         - name: wings-storage
           subPath: config
           mountPath: /etc/pelican
-      - name: docker
-        image: {{ .Values.wings.dind.image }}
-        restartPolicy: Always # This makes it a native sidecar
-        securityContext:
-          privileged: true
-        command: ["dockerd", "--host", "tcp://127.0.0.1:2375"]
-        volumeMounts:
-        - name: wings-storage
-          subPath: docker-data
-          mountPath: /var/lib/docker
       volumes:
       - name: config-temp
         secret:
