@@ -25,27 +25,13 @@ spec:
       initContainers:
       - name: init-config
         image: busybox
-        # Changed /tmp/config.yml to /tmp/secret/config.yml
-        command: ['sh', '-c', 'if [ ! -f /etc/pelican/config.yml ]; then cp /tmp/secret/config.yml /etc/pelican/config.yml; fi']
+        command: ['sh', '-c', 'cp /tmp/secret/config.yml /etc/pelican/config.yml']
         volumeMounts:
         - name: config-temp
-          mountPath: /tmp/secret # Mount the secret to its own folder
+          mountPath: /tmp/secret
         - name: wings-storage
           subPath: config
           mountPath: /etc/pelican
-      - name: wait-for-docker
-        image: alpine:3.20
-        command: ["/bin/sh", "-c"]
-        args:
-        - |
-          echo "Waiting for Docker sidecar on 127.0.0.1:2375..."
-          # We loop until the port is open
-          # Since it is a sidecar, 127.0.0.1 is shared
-          until nc -z 127.0.0.1 2375; do
-            echo "Docker not ready yet... sleeping"
-            sleep 2
-          done
-          echo "Docker is UP! Starting Wings..."
       containers:
       - name: wings
         image: {{ .Values.wings.image }}
@@ -60,6 +46,7 @@ spec:
           mountPath: /etc/pelican
       - name: docker
         image: {{ .Values.wings.dind.image }}
+        restartPolicy: Always # This makes it a native sidecar
         securityContext:
           privileged: true
         command: ["dockerd", "--host", "tcp://127.0.0.1:2375"]
