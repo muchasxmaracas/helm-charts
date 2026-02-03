@@ -5,19 +5,15 @@ metadata:
   namespace: pelican
 spec:
   type: ClusterIP
-  clusterIP: 10.43.200.200 # Locked forever
+  clusterIP: 10.43.200.200  # Your Forever IP
   selector:
     app: wings
   ports:
-    - name: https-internal # Add this!
+    - name: https-internal
       protocol: TCP
-      port: 443
-      targetPort: 8080
+      port: 443        # Catch the Panel's internal HTTPS request
+      targetPort: 8080 # Send it to Wings
     - name: api
       protocol: TCP
       port: 8080
       targetPort: 8080
-    - name: sftp
-      protocol: TCP
-      port: 2022
-      targetPort: 2022
