@@ -88,7 +88,7 @@ spec:
         - name: CADDY_PROXIED
           value: "true" # Tells Pelican it is behind an Ingress/Proxy
         - name: SERVER_NAME
-          value: ":80" # Force Caddy to listen on HTTP port 80 only
+          value: "http://:80" # Force Caddy to listen on HTTP port 80 only
         - name: ASSET_URL
           value: "https://game.baphomet.cloud"
         - name: APP_SERVICE_SSL
@@ -98,7 +98,7 @@ spec:
         - name: CADDY_TRUSTED_PROXIES
           value: "trusted_proxies static private_ranges"
         - name: TRUSTED_PROXIES
-          value: "*"
+          value: "0.0.0.0/0"
         volumeMounts:
         - name: panel-data
           subPath: storage
