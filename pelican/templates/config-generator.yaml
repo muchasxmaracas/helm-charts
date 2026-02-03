@@ -10,22 +10,21 @@ spec:
       serviceAccountName: pelican-config-sa
       containers:
       - name: generator
-        image: bitnami/kubectl:latest
-        user: 0 # Run as root to allow package installation
+        image: rancher/kubectl:v1.26.7
         command:
         - "/bin/sh"
         - "-c"
         - |
-          # Install jq quickly
-          install_packages jq curl
-
-          # Fetch config from Panel API
-          CONFIG=$(curl -s -X GET "$PANEL_URL/api/remote/nodes/$NODE_UUID/configuration" \
+          # Fetch config using the CORRECT endpoint
+          # Note: Removed /configuration from the end
+          CONFIG=$(curl -s -X GET "$PANEL_URL/api/remote/nodes/$NODE_UUID" \
             -H "Authorization: Bearer $API_TOKEN" \
             -H "Accept: application/json")
           
-          if [ -z "$CONFIG" ] || [ "$CONFIG" = "null" ]; then 
-            echo "Error: Failed to fetch config from $PANEL_URL"
+          # Check if we got a 404 or error in the JSON
+          if echo "$CONFIG" | grep -q "errors"; then
+            echo "API Error detected:"
+            echo "$CONFIG"
             exit 1
           fi
 
