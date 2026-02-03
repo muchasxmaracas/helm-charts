@@ -36,6 +36,15 @@ spec:
       containers:
       - name: wings
         image: {{ .Values.wings.image }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          echo "Waiting for Docker sidecar..."
+          until nc -z 127.0.0.1 2375; do
+            sleep 1
+          done
+          echo "Docker is up! Starting Wings..."
+          exec /usr/local/bin/wings
         env:
         - name: DOCKER_HOST
           value: tcp://localhost:2375
