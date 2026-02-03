@@ -4,6 +4,8 @@ metadata:
   name: wings
   namespace: pelican
 spec:
+  type: ClusterIP
+  clusterIP: 10.43.200.200 # Locked forever
   selector:
     app: wings
   ports:
