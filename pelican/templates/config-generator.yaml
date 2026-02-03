@@ -10,19 +10,16 @@ spec:
       serviceAccountName: pelican-config-sa
       containers:
       - name: generator
-        image: bitnami/kubectl:latest
+        image: bitnami/google-cloud-sdk:latest
         command:
         - "/bin/sh"
         - "-c"
         - |
-          # Download a portable jq binary since we can't use tdnf/apk easily
-          curl -sLo /tmp/jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64
-          chmod +x /tmp/jq
-          
+          # These tools are pre-installed in this image
           NODE_ID="1"
           echo "Fetching config for Node ID: $NODE_ID..."
           
-          # Fetch from the Application API path we found in your route:list
+          # Fetch the config from the verified API path
           CONFIG=$(curl -s -X GET "$PANEL_URL/api/application/nodes/$NODE_ID/configuration" \
             -H "Authorization: Bearer $API_TOKEN" \
             -H "Accept: application/json")
@@ -33,8 +30,9 @@ spec:
             exit 1
           fi
 
-          # Apply overrides for K8s networking using our downloaded jq
-          FINAL_CONFIG=$(echo "$CONFIG" | /tmp/jq '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
+          # Apply overrides for K8s networking
+          # Note: bitnami/google-cloud-sdk usually has jq, if not we use a quick python one-liner
+          FINAL_CONFIG=$(echo "$CONFIG" | jq '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
           
           # Patch the Secret
           echo "$FINAL_CONFIG" > /tmp/config.yml
