@@ -9,6 +9,10 @@ spec:
   selector:
     app: wings
   ports:
+    - name: https-internal # Add this!
+      protocol: TCP
+      port: 443
+      targetPort: 8080
     - name: api
       protocol: TCP
       port: 8080
