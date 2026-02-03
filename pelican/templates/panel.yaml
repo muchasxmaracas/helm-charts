@@ -113,6 +113,10 @@ spec:
         - name: panel-data
           subPath: public_themes
           mountPath: /var/www/html/public/themes
+        - name: caddyfile-config
+          mountPath: /etc/caddy/Caddyfile
+          subPath: Caddyfile
+          readOnly: true
   volumeClaimTemplates:
   - metadata:
       name: panel-data
@@ -121,3 +125,8 @@ spec:
       resources:
         requests:
           storage: {{ .Values.persistence.panel.size | default "2Gi" | quote }}
+
+  volumes:
+  - name: caddyfile-config
+    configMap:
+      name: pelican-caddyfile
