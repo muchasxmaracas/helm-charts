@@ -102,6 +102,10 @@ spec:
           value: "*"
         - name: FORCE_HTTPS
           value: "true"
+        - name: CADDY_AUTO_HTTPS
+          value: "off"
+        - name: AUTO_HTTPS
+          value: "off"
         volumeMounts:
         - name: panel-data
           subPath: storage
