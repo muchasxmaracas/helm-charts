@@ -15,6 +15,10 @@ spec:
       labels:
         {{- include "pelican.selectorLabels" . | nindent 8 }}
     spec:
+      hostAliases:
+        - ip: "10.43.200.200"
+          hostnames:
+          - "node1.game.baphomet.cloud"
       initContainers:
       - name: volume-permissions
         image: busybox
