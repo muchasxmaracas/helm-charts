@@ -32,7 +32,7 @@ panel:
   extraEnv:
     APP_ENV: production
     APP_DEBUG: "false" 
-    APP_URL: http://game.baphomet.cloud
+    APP_URL: https://game.baphomet.cloud
     TIMEZONE: UTC
     APP_EMAIL: "sandromarton95@gmail.com" # Dummy email for Caddy SSL management
     CADDY_SERVER_ADMIN_EMAIL: "sandromarton95@gmail.com" # Dummy email for Caddy SSL management
