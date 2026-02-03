@@ -23,7 +23,7 @@ spec:
           chmod +x ./kubectl
           mv ./kubectl /usr/local/bin/kubectl
 
-          NODE_ID="1"
+          NODE_ID="2"
           echo "Fetching config for Node ID: $NODE_ID..."
           
           # 3. Fetch from the Application API
