@@ -17,38 +17,36 @@ spec:
         - |
           apk add --no-cache jq curl
           
-          echo "Fetching config for Node UUID: $NODE_UUID"
+          # Use the INTEGER ID here (likely 1)
+          NODE_ID="1" 
           
-          # 1. Try fetching via the Node UUID (Remote path)
-          # Some Pelican versions expect this for the config
-          CONFIG=$(curl -s -X GET "$PANEL_URL/api/remote/nodes/$NODE_UUID/configuration" \
+          echo "Fetching config for Node ID: $NODE_ID"
+          
+          CONFIG=$(curl -s -X GET "$PANEL_URL/api/application/nodes/$NODE_ID/configuration" \
             -H "Authorization: Bearer $API_TOKEN" \
             -H "Accept: application/json")
 
-          # 2. If 404, try the Application API path (using UUID as ID)
-          if echo "$CONFIG" | grep -q "404"; then
-            echo "Remote path 404, trying Application API path..."
-            CONFIG=$(curl -s -X GET "$PANEL_URL/api/application/nodes/$NODE_UUID/configuration" \
-              -H "Authorization: Bearer $API_TOKEN" \
-              -H "Accept: application/json")
-          fi
-          
           if echo "$CONFIG" | grep -q "errors" || [ -z "$CONFIG" ]; then
-            echo "CRITICAL: Panel returned an error response:"
+            echo "FAILED! Response from Panel:"
             echo "$CONFIG"
             exit 1
           fi
 
-          # Apply K8s overrides
+          # Extract data if Pelican wraps it (common in Application API)
+          IS_WRAPPED=$(echo "$CONFIG" | jq 'has("attributes")')
+          if [ "$IS_WRAPPED" = "true" ]; then
+             CONFIG=$(echo "$CONFIG" | jq '.attributes')
+          fi
+
+          # Apply overrides for K8s networking
           FINAL_CONFIG=$(echo "$CONFIG" | jq '.api.ssl.enabled=false | .system.docker.host="tcp://127.0.0.1:2375" | .remote="https://game.baphomet.cloud"')
           
-          # Patch the Secret
           echo "$FINAL_CONFIG" > /tmp/config.yml
           kubectl create secret generic wings-config \
             --from-file=config.yml=/tmp/config.yml \
             --dry-run=client -o yaml | kubectl apply -f -
           
-          echo "SUCCESS: wings-config secret updated."
+          echo "SUCCESS: Secret 'wings-config' updated with latest Panel data."
         env:
         - name: PANEL_URL
           value: "https://game.baphomet.cloud"
@@ -57,6 +55,4 @@ spec:
             secretKeyRef:
               name: pelican-api-token
               key: token
-        - name: NODE_UUID
-          value: "1"
       restartPolicy: OnFailure
