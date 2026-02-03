@@ -33,6 +33,9 @@ spec:
         - name: wings-storage
           subPath: docker-data
           mountPath: /var/lib/docker
+        - name: wings-storage
+          subPath: server-data
+          mountPath: /var/lib/pelican/volumes
       # 2. THE WAITER (Now it will actually work!)
       - name: wait-for-docker
         image: alpine:3.20
@@ -63,6 +66,9 @@ spec:
         - name: wings-storage
           subPath: config
           mountPath: /etc/pelican
+        - name: wings-storage
+          subPath: server-data
+          mountPath: /var/lib/pelican/volumes
       volumes:
       - name: config-temp
         secret:
